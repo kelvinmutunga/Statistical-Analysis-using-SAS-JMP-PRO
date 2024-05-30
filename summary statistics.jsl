@@ -1,0 +1,149 @@
+New Table( "SaleData",
+	Add Rows( 45 ),
+	New Script(
+		"Source",
+		Open(
+			"C:\Users\Administration\OneDrive\Desktop\kelvin mutunga Weekly Plans & Reports\SaleDat.xlsx",
+			Worksheets( "SaleData" ),
+			Use for all sheets( 1 ),
+			Concatenate Worksheets( 0 ),
+			Create Concatenation Column( 0 ),
+			Worksheet Settings(
+				1,
+				Has Column Headers( 1 ),
+				Number of Rows in Headers( 1 ),
+				Headers Start on Row( 1 ),
+				Data Starts on Row( 2 ),
+				Data Starts on Column( 1 ),
+				Data Ends on Row( 0 ),
+				Data Ends on Column( 0 ),
+				Replicated Spanned Rows( 1 ),
+				Replicated Spanned Headers( 0 ),
+				Suppress Hidden Rows( 1 ),
+				Suppress Hidden Columns( 1 ),
+				Suppress Empty Columns( 1 ),
+				Treat as Hierarchy( 0 ),
+				Multiple Series Stack( 0 ),
+				Import Cell Colors( 0 ),
+				Limit Column Detect( 0 ),
+				Column Separator String( "-" )
+			)
+		)
+	),
+	New Column( "Region",
+		Character( 7 ),
+		"Nominal",
+		Set Values(
+			{"East", "Central", "Central", "Central", "West", "East", "Central",
+			"Central", "West", "East", "Central", "East", "East", "East", "Central",
+			"East", "Central", "East", "East", "Central", "Central", "East",
+			"Central", "Central", "East", "West", "Central", "Central", "East",
+			"Central", "Central", "Central", "East", "Central", "Central", "West",
+			"Central", "West", "West", "Central", "Central", "Central", "Central",
+			"", ""}
+		)
+	),
+	New Column( "Manager",
+		Character( 7 ),
+		"Nominal",
+		Set Values(
+			{"Martha", "Hermann", "Hermann", "Timothy", "Timothy", "Martha",
+			"Martha", "Hermann", "Douglas", "Martha", "Hermann", "Martha", "Douglas",
+			"Martha", "Douglas", "Martha", "Hermann", "Martha", "Douglas", "Hermann",
+			"Douglas", "Douglas", "Timothy", "Douglas", "Martha", "Timothy",
+			"Hermann", "Martha", "Martha", "Timothy", "Timothy", "Hermann", "Martha",
+			"Hermann", "Hermann", "Timothy", "Timothy", "Timothy", "Douglas",
+			"Martha", "Hermann", "Hermann", "Martha", "", ""}
+		)
+	),
+	New Column( "SalesMan",
+		Character,
+		"Nominal",
+		Set Values(
+			{"Alexander", "Shelli", "Luis", "David", "Stephen", "Alexander",
+			"Steven", "Luis", "Michael", "Alexander", "Sigal", "Diana", "Karen",
+			"Alexander", "John", "Alexander", "Sigal", "Alexander", "Karen",
+			"Shelli", "John", "Karen", "David", "John", "Alexander", "Stephen",
+			"Luis", "Steven", "Diana", "David", "David", "Shelli", "Alexander",
+			"Sigal", "Shelli", "Stephen", "David", "Stephen", "Michael", "Steven",
+			"Luis", "Luis", "Steven", "", ""}
+		)
+	),
+	New Column( "Item",
+		Character,
+		"Nominal",
+		Set Values(
+			{"Television", "Home Theater", "Television", "Cell Phone", "Television",
+			"Home Theater", "Television", "Television", "Television", "Home Theater",
+			"Television", "Home Theater", "Home Theater", "Television", "Desk",
+			"Video Games", "Home Theater", "Cell Phone", "Cell Phone", "Video Games",
+			"Television", "Video Games", "Home Theater", "Home Theater",
+			"Home Theater", "Home Theater", "Video Games", "Television",
+			"Cell Phone", "Television", "Home Theater", "Desk", "Video Games",
+			"Video Games", "Video Games", "Desk", "Television", "Cell Phone",
+			"Home Theater", "Television", "Home Theater", "Home Theater",
+			"Home Theater", "", ""}
+		)
+	),
+	New Column( "Units",
+		Numeric,
+		"Continuous",
+		Format( "Best", 15 ),
+		Set Values(
+			[95, 50, 36, 27, 56, 60, 75, 90, 32, 60, 90, 29, 81, 35, 2, 16, 28, 64,
+			15, 96, 67, 74, 46, 87, 4, 7, 50, 66, 96, 53, 80, 5, 62, 55, 42, 3, 7,
+			76, 57, 14, 11, 94, 28, ., .]
+		)
+	),
+	New Column( "Unit_price",
+		Numeric,
+		"Continuous",
+		Format( "Fixed Dec", 15, 2 ),
+		Set Values(
+			[1198, 500, 1198, 225, 1198, 500, 1198, 1198, 1198, 500, 1198, 500, 500,
+			1198, 125, 58.5, 500, 225, 225, 58.5, 1198, 58.5, 500, 500, 500, 500,
+			58.5, 1198, 225, 1198, 500, 125, 58.5, 58.5, 58.5, 125, 1198, 225, 500,
+			1198, 500, 500, 500, ., .]
+		)
+	),
+	New Column( "Sale_amt",
+		Numeric,
+		"Continuous",
+		Format( "Fixed Dec", 15, 2 ),
+		Set Values(
+			[113810, 25000, 43128, 6075, 67088, 30000, 89850, 107820, 38336, 30000,
+			107820, 14500, 40500, 41930, 250, 936, 14000, 14400, 3375, 5616, 80266,
+			4329, 23000, 43500, 2000, 3500, 2925, 79068, 21600, 63494, 40000, 625,
+			3627, 3217.5, 2457, 375, 8386, 17100, 28500, 16772, 5500, 47000, 14000,
+			., .]
+		)
+	)
+)
+
+Distribution(
+	Continuous Distribution( Column( :Units ) ),
+	Continuous Distribution( Column( :Unit_price ) ),
+	Continuous Distribution( Column( :Sale_amt ) )
+);
+
+Fit Group(
+	Bivariate( Y( :Sale_amt ), X( :Units ) ),
+	Oneway( Y( :Sale_amt ), X( :Region ) ),
+	<<{Arrange in Rows( 2 )}
+);
+
+Fit Model(
+	Y( :Sale_amt ),
+	Effects( :Units, :Unit_price, :Region ),
+	Personality( "Standard Least Squares" ),
+	Emphasis( "Effect Leverage" ),
+	Run(
+		:Sale_amt << {Plot Actual by Predicted( 1 ), Plot Regression( 0 ),
+		Plot Residual by Predicted( 1 ), Plot Effect Leverage( 1 )}
+	)
+);
+
+Graph Builder(
+	Variables( X( :Region ), Y( :Sale_amt ) ),
+	Elements( Points( X, Y, Legend( 18 ) ) )
+);
